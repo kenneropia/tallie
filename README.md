@@ -41,7 +41,7 @@ A complete restaurant reservation management system built with Node.js, TypeScri
 3. Run database migrations: `npm run typeorm migration:run -- -d dist/database/dataSource.js`
 4. Start development server: `npm run dev`
 
-The server will start on `http://localhost:3000`.
+The server will start on `https://tallie.onrender.com/`.
 
 ### Environment Variables
 
@@ -80,11 +80,11 @@ The Docker setup includes:
 
 ### Base URL
 ```
-http://localhost:3000/api
+https://tallie.onrender.com/api
 ```
 
 ### Interactive Documentation
-Visit `http://localhost:3000/api-docs` for Swagger UI with all endpoints and request/response examples.
+Visit `https://tallie.onrender.com/api-docs` for Swagger UI with all endpoints and request/response examples.
 
 ### Restaurants
 
@@ -372,7 +372,6 @@ For < 50 restaurants, use single instance. For larger scale, deploy multiple ins
 - `npm start` - Run compiled server
 - `npm test` - Run Jest tests
 - `npm run test:watch` - Run tests in watch mode
-- `npm run test:ci` - Run tests with coverage
 - `npm run lint` - Run ESLint
 - `npm run lint -- --fix` - Auto-fix linting issues
 - `npm run typeorm migration:generate -- --name MigrationName` - Generate migrations
@@ -425,19 +424,3 @@ src/
         ├── errors.ts
         └── validators.ts
 ```
-
----
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
-
-## License
-
-ISC
