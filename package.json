@@ -1,5 +1,4 @@
 {
-  "type": "module",
   "name": "tallie",
   "version": "1.0.0",
   "main": "index.js",
@@ -10,6 +9,7 @@
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
+    "prestart": "npx tsc",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint src --ext .ts",
