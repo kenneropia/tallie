@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: tallie-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - tallie-network
+
+  app:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    container_name: tallie-app
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_PATH=/app/data/db.sqlite
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - tallie-network
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+
+networks:
+  tallie-network:
+    driver: bridge
