@@ -712,10 +712,6 @@ Integrated via Resend with events:
 - [ ] **Authorization**: Role-based access control (owner, staff, customer)
 - [ ] **Rate Limiting**: Prevent abuse of availability and reservation endpoints
 - [ ] **Input Sanitization**: XSS and SQL injection protection
-- [ ] **Comprehensive Testing**: Aim for 80%+ coverage across all modules
-  - Unit tests for services
-  - Integration tests for workflows
-  - End-to-end tests for critical paths
 
 ### Priority 2: Data Integrity
 
@@ -730,8 +726,6 @@ Integrated via Resend with events:
 - [ ] **Pagination**: Add limit/offset to list endpoints
 - [ ] **Advanced Filtering**: Filter by status, date range, customer name
 - [ ] **Recurring Reservations**: Support for weekly/monthly bookings
-- [ ] **Table Sections**: Organize tables by section (patio, bar, dining room)
-- [ ] **Special Requests**: Allow customers to specify preferences (high chair, wheelchair access, quiet corner)
 
 ### Priority 4: Operations
 
@@ -794,10 +788,7 @@ For large scale (100+ restaurants):
 - Or shared database with aggressive caching
 - Add read replicas for availability checks
 
-#### 6. **Deployment**
-For < 50 restaurants, use single instance. For larger scale, deploy multiple instances with load balancer (HAProxy/Nginx), managed PostgreSQL, and managed Redis cluster.
-
-#### 7. **Cost Optimization**
+#### 6. **Cost Optimization**
 - Shared infrastructure (single app, single database, single Redis)
 - Per-restaurant usage metrics for billing
 - Scheduled jobs for cleanup (old reservations, waitlist entries)
