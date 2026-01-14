@@ -88,45 +88,498 @@ Visit `https://tallie.onrender.com/api-docs` for Swagger UI with all endpoints a
 
 ### Restaurants
 
-- **Create Restaurant**: `POST /restaurants` - Create a new restaurant with opening/closing times
-- **Get Restaurant**: `GET /restaurants/:id` - Retrieve restaurant details with associated tables
-- **Get Restaurant Details**: `GET /restaurants/:id/details` - Get aggregated statistics (table count, capacity, reservations, waitlist)
-- **Update Restaurant**: `PATCH /restaurants/:id` - Update opening/closing times
+#### Create Restaurant
+**POST** `/restaurants`
+
+Request:
+```json
+{
+  "name": "The Bistro",
+  "openingTime": "11:00",
+  "closingTime": "23:00"
+}
+```
+
+Response (201):
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "name": "The Bistro",
+  "openingTime": "11:00",
+  "closingTime": "23:00",
+  "createdAt": "2024-01-10T12:00:00.000Z",
+  "updatedAt": "2024-01-10T12:00:00.000Z"
+}
+```
+
+#### Get Restaurant
+**GET** `/restaurants/:id`
+
+Response (200):
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "name": "The Bistro",
+  "openingTime": "11:00",
+  "closingTime": "23:00",
+  "tables": [
+    {
+      "id": "660e8400-e29b-41d4-a716-446655440001",
+      "tableNumber": 1,
+      "capacity": 4
+    },
+    {
+      "id": "660e8400-e29b-41d4-a716-446655440002",
+      "tableNumber": 2,
+      "capacity": 6
+    }
+  ],
+  "createdAt": "2024-01-10T12:00:00.000Z",
+  "updatedAt": "2024-01-10T12:00:00.000Z"
+}
+```
+
+#### Get Restaurant Details
+**GET** `/restaurants/:id/details`
+
+Response (200):
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "name": "The Bistro",
+  "openingTime": "11:00",
+  "closingTime": "23:00",
+  "totalTables": 2,
+  "tables": [
+    {
+      "id": "660e8400-e29b-41d4-a716-446655440001",
+      "tableNumber": 1,
+      "capacity": 4
+    }
+  ],
+  "reservationStats": {
+    "total": 5,
+    "pending": 1,
+    "confirmed": 3,
+    "completed": 1,
+    "cancelled": 0
+  },
+  "createdAt": "2024-01-10T12:00:00.000Z"
+}
+```
+
+#### Update Restaurant
+**PATCH** `/restaurants/:id`
+
+Request:
+```json
+{
+  "openingTime": "10:00",
+  "closingTime": "22:00",
+  "name": "The Bistro Premium"
+}
+```
+
+Response (200):
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "name": "The Bistro Premium",
+  "openingTime": "10:00",
+  "closingTime": "22:00",
+  "createdAt": "2024-01-10T12:00:00.000Z",
+  "updatedAt": "2024-01-10T14:30:00.000Z"
+}
+```
 
 ### Tables
 
-- **Add Table**: `POST /restaurants/:id/tables` - Add a new table with capacity
-- **List Tables**: `GET /restaurants/:id/tables` - Get all tables for a restaurant
-- **Update Table**: `PATCH /restaurants/:id/tables/:tableId` - Update table capacity
-- **Delete Table**: `DELETE /restaurants/:id/tables/:tableId`
+#### Add Table
+**POST** `/restaurants/:id/tables`
+
+Request:
+```json
+{
+  "tableNumber": 3,
+  "capacity": 8
+}
+```
+
+Response (201):
+```json
+{
+  "id": "660e8400-e29b-41d4-a716-446655440003",
+  "restaurantId": "550e8400-e29b-41d4-a716-446655440000",
+  "tableNumber": 3,
+  "capacity": 8,
+  "createdAt": "2024-01-10T12:00:00.000Z",
+  "updatedAt": "2024-01-10T12:00:00.000Z"
+}
+```
+
+#### List Tables
+**GET** `/restaurants/:id/tables`
+
+Response (200):
+```json
+{
+  "tables": [
+    {
+      "id": "660e8400-e29b-41d4-a716-446655440001",
+      "restaurantId": "550e8400-e29b-41d4-a716-446655440000",
+      "tableNumber": 1,
+      "capacity": 4
+    },
+    {
+      "id": "660e8400-e29b-41d4-a716-446655440002",
+      "restaurantId": "550e8400-e29b-41d4-a716-446655440000",
+      "tableNumber": 2,
+      "capacity": 6
+    }
+  ],
+  "total": 2
+}
+```
+
+#### Update Table
+**PATCH** `/restaurants/:id/tables/:tableId`
+
+Request:
+```json
+{
+  "capacity": 10
+}
+```
+
+Response (200):
+```json
+{
+  "id": "660e8400-e29b-41d4-a716-446655440003",
+  "restaurantId": "550e8400-e29b-41d4-a716-446655440000",
+  "tableNumber": 3,
+  "capacity": 10,
+  "createdAt": "2024-01-10T12:00:00.000Z",
+  "updatedAt": "2024-01-10T14:35:00.000Z"
+}
+```
+
+#### Delete Table
+**DELETE** `/restaurants/:id/tables/:tableId`
+
+Response (200):
+```json
+{
+  "message": "Table deleted successfully"
+}
+```
 
 ### Reservations
 
-- **Create Reservation**: `POST /restaurants/:id/reservations` - Book a table with customer details
-- **List Reservations**: `GET /restaurants/:id/reservations` - Get all reservations with optional filtering
-- **Get Reservation**: `GET /restaurants/:id/reservations/:reservationId` - Get reservation details
-- **Modify Reservation**: `PATCH /restaurants/:id/reservations/:reservationId` - Update reservation time or party size
-- **Cancel Reservation**: `DELETE /restaurants/:id/reservations/:reservationId` - Cancel and free up the table
+#### Check Available Slots
+**GET** `/restaurants/:id/availability?date=2024-01-15&partySize=4&duration=120`
 
-### Availability
+Query Parameters:
+- `date` (required): YYYY-MM-DD format
+- `partySize` (required): Integer > 0
+- `duration` (optional): Reservation duration in minutes (default: 120)
 
-- **Check Available Slots**: `GET /restaurants/:id/availability` - Query available time slots by date, party size, and duration
-  - Query parameters: `date`, `partySize`, `durationMinutes`
-  - Returns list of available slots with time ranges and table information
+Response (200):
+```json
+{
+  "restaurantId": "550e8400-e29b-41d4-a716-446655440000",
+  "date": "2024-01-15",
+  "partySize": 4,
+  "duration": 120,
+  "availableSlots": [
+    {
+      "startTime": "11:00",
+      "endTime": "13:00",
+      "tableId": "660e8400-e29b-41d4-a716-446655440001",
+      "tableNumber": 1,
+      "capacity": 4
+    },
+    {
+      "startTime": "13:30",
+      "endTime": "15:30",
+      "tableId": "660e8400-e29b-41d4-a716-446655440001",
+      "tableNumber": 1,
+      "capacity": 4
+    },
+    {
+      "startTime": "11:00",
+      "endTime": "13:00",
+      "tableId": "660e8400-e29b-41d4-a716-446655440002",
+      "tableNumber": 2,
+      "capacity": 6
+    }
+  ]
+}
+```
+
+#### Create Reservation
+**POST** `/restaurants/:id/reservations`
+
+Request:
+```json
+{
+  "customerName": "John Doe",
+  "customerPhone": "+1-555-0123",
+  "customerEmail": "john@example.com",
+  "partySize": 4,
+  "reservationDate": "2024-01-15",
+  "reservationStartTime": "19:00",
+  "duration": 120
+}
+```
+
+Response (201):
+```json
+{
+  "id": "770e8400-e29b-41d4-a716-446655440000",
+  "restaurantId": "550e8400-e29b-41d4-a716-446655440000",
+  "tableId": "660e8400-e29b-41d4-a716-446655440001",
+  "customerName": "John Doe",
+  "customerPhone": "+1-555-0123",
+  "customerEmail": "john@example.com",
+  "partySize": 4,
+  "reservationDate": "2024-01-15",
+  "reservationStartTime": "19:00",
+  "reservationEndTime": "21:00",
+  "duration": 120,
+  "status": "confirmed",
+  "createdAt": "2024-01-10T12:00:00.000Z",
+  "updatedAt": "2024-01-10T12:00:00.000Z"
+}
+```
+
+#### List Reservations
+**GET** `/restaurants/:id/reservations?date=2024-01-15&status=confirmed`
+
+Query Parameters:
+- `date` (required): YYYY-MM-DD format
+- `status` (optional): pending, confirmed, completed, or cancelled
+
+Response (200):
+```json
+{
+  "reservations": [
+    {
+      "id": "770e8400-e29b-41d4-a716-446655440000",
+      "tableNumber": 1,
+      "customerName": "John Doe",
+      "partySize": 4,
+      "reservationDate": "2024-01-15",
+      "reservationStartTime": "19:00",
+      "reservationEndTime": "21:00",
+      "status": "confirmed",
+      "createdAt": "2024-01-10T12:00:00.000Z"
+    },
+    {
+      "id": "770e8400-e29b-41d4-a716-446655440001",
+      "tableNumber": 2,
+      "customerName": "Jane Smith",
+      "partySize": 6,
+      "reservationDate": "2024-01-15",
+      "reservationStartTime": "20:00",
+      "reservationEndTime": "22:00",
+      "status": "confirmed",
+      "createdAt": "2024-01-10T12:15:00.000Z"
+    }
+  ],
+  "total": 2,
+  "date": "2024-01-15"
+}
+```
+
+#### Get Reservation
+**GET** `/restaurants/:id/reservations/:reservationId`
+
+Response (200):
+```json
+{
+  "id": "770e8400-e29b-41d4-a716-446655440000",
+  "restaurantId": "550e8400-e29b-41d4-a716-446655440000",
+  "tableId": "660e8400-e29b-41d4-a716-446655440001",
+  "tableNumber": 1,
+  "customerName": "John Doe",
+  "customerPhone": "+1-555-0123",
+  "partySize": 4,
+  "reservationDate": "2024-01-15",
+  "reservationStartTime": "19:00",
+  "reservationEndTime": "21:00",
+  "duration": 120,
+  "status": "confirmed",
+  "createdAt": "2024-01-10T12:00:00.000Z"
+}
+```
+
+#### Modify Reservation
+**PATCH** `/restaurants/:id/reservations/:reservationId`
+
+Request (modify time and/or party size):
+```json
+{
+  "reservationStartTime": "18:00",
+  "duration": 90,
+  "partySize": 5
+}
+```
+
+Response (200):
+```json
+{
+  "id": "770e8400-e29b-41d4-a716-446655440000",
+  "restaurantId": "550e8400-e29b-41d4-a716-446655440000",
+  "tableId": "660e8400-e29b-41d4-a716-446655440002",
+  "customerName": "John Doe",
+  "customerPhone": "+1-555-0123",
+  "partySize": 5,
+  "reservationDate": "2024-01-15",
+  "reservationStartTime": "18:00",
+  "reservationEndTime": "19:30",
+  "duration": 90,
+  "status": "confirmed",
+  "createdAt": "2024-01-10T12:00:00.000Z",
+  "updatedAt": "2024-01-10T13:00:00.000Z"
+}
+```
+
+#### Cancel Reservation
+**DELETE** `/restaurants/:id/reservations/:reservationId`
+
+Response (200):
+```json
+{
+  "id": "770e8400-e29b-41d4-a716-446655440000",
+  "status": "cancelled",
+  "message": "Reservation cancelled successfully",
+  "updatedAt": "2024-01-10T14:00:00.000Z"
+}
+```
 
 ### Waitlist
 
-- **Add to Waitlist**: `POST /restaurants/:id/waitlist` - Join waitlist when no tables available
-- **View Waitlist**: `GET /restaurants/:id/waitlist` - Get all waitlist entries
-- **Update Waitlist Status**: `PATCH /restaurants/:id/waitlist/:waitlistId` - Update status (e.g., notified, seated)
+#### Add to Waitlist
+**POST** `/restaurants/:id/waitlist`
+
+Request:
+```json
+{
+  "customerName": "Alice Brown",
+  "customerPhone": "+1-555-0456",
+  "customerEmail": "alice@example.com",
+  "partySize": 4,
+  "requestedDate": "2024-01-15",
+  "requestedTime": "19:00",
+  "preferredTimeRange": "19:00-20:00"
+}
+```
+
+Response (201):
+```json
+{
+  "id": "880e8400-e29b-41d4-a716-446655440000",
+  "restaurantId": "550e8400-e29b-41d4-a716-446655440000",
+  "customerName": "Alice Brown",
+  "customerPhone": "+1-555-0456",
+  "customerEmail": "alice@example.com",
+  "partySize": 4,
+  "requestedDate": "2024-01-15",
+  "requestedTime": "19:00",
+  "preferredTimeRange": "19:00-20:00",
+  "status": "waiting",
+  "createdAt": "2024-01-10T12:30:00.000Z",
+  "updatedAt": "2024-01-10T12:30:00.000Z"
+}
+```
+
+#### View Waitlist
+**GET** `/restaurants/:id/waitlist`
+
+Response (200):
+```json
+{
+  "waitlist": [
+    {
+      "id": "880e8400-e29b-41d4-a716-446655440000",
+      "restaurantId": "550e8400-e29b-41d4-a716-446655440000",
+      "customerName": "Alice Brown",
+      "customerPhone": "+1-555-0456",
+      "customerEmail": "alice@example.com",
+      "partySize": 4,
+      "requestedDate": "2024-01-15",
+      "requestedTime": "19:00",
+      "preferredTimeRange": "19:00-20:00",
+      "status": "waiting",
+      "createdAt": "2024-01-10T12:30:00.000Z"
+    }
+  ],
+  "total": 1
+}
+```
+
+#### Update Waitlist Status
+**PATCH** `/restaurants/:id/waitlist/:waitlistId`
+
+Request:
+```json
+{
+  "status": "notified"
+}
+```
+
+Response (200):
+```json
+{
+  "id": "880e8400-e29b-41d4-a716-446655440000",
+  "restaurantId": "550e8400-e29b-41d4-a716-446655440000",
+  "customerName": "Alice Brown",
+  "customerPhone": "+1-555-0456",
+  "customerEmail": "alice@example.com",
+  "partySize": 4,
+  "requestedDate": "2024-01-15",
+  "requestedTime": "19:00",
+  "preferredTimeRange": "19:00-20:00",
+  "status": "notified",
+  "updatedAt": "2024-01-10T13:00:00.000Z"
+}
+```
 
 ### Error Responses
 
 All errors follow this format with standard HTTP status codes:
-- `400`: Bad Request (validation error)
-- `404`: Not Found
-- `409`: Conflict (e.g., double-booking)
-- `500`: Internal Server Error
+
+**400: Bad Request**
+```json
+{
+  "error": "Validation failed",
+  "details": "Invalid date format. Use YYYY-MM-DD"
+}
+```
+
+**404: Not Found**
+```json
+{
+  "error": "Not Found",
+  "details": "Restaurant not found"
+}
+```
+
+**409: Conflict**
+```json
+{
+  "error": "Conflict",
+  "details": "Table is already booked for the requested time"
+}
+```
+
+**500: Internal Server Error**
+```json
+{
+  "error": "Internal Server Error",
+  "details": "An unexpected error occurred"
+}
+```
 
 ---
 
